@@ -1,0 +1,2 @@
+# mandelbrot
+Drawing Mandelbrot set
