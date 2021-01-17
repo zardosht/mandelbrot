@@ -12,7 +12,6 @@ find_library(SIFTGPU_LIBRARY libfreeimage)
 include_directories(${SIFTGPU_INCLUDE_DIR})
 
 
-add_executable(mandelbrot src/mandelbrot.cpp
-                          src/utils.cpp
-                          src/save_image.cpp)
+add_executable(mandelbrot src/main 
+                          src/mandelbrot.cpp)
 target_link_libraries(mandelbrot freeimage)

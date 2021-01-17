@@ -1,108 +1,53 @@
-#include <iostream>
-#include <complex>
-#include <vector>
-#include <chrono>
-#include <functional>
+#include<iostream>
 
-#include "window.h"
-#include "save_image.h"
-#include "utils.h"
 
-// clang++ -std=c++11 -stdlib=libc++ -O3 save_image.cpp utils.cpp mandel.cpp -lfreeimage
+#include "mandelbrot.h"
 
-// Use an alias to simplify the use of complex type
-using Complex = std::complex<double>;
 
-// Convert a pixel coordinate to the complex domain
-Complex scale(Window<int> &scr, Window<double> &fr, Complex c) {
-	Complex aux(c.real() / (double)scr.width() * fr.width() + fr.xmin(),
-		c.imag() / (double)scr.height() * fr.height() + fr.ymin());
-	return aux;
+
+
+void Mandelbrot::draw()
+{
+    std::cout << "Mandelbrot::draw() called" << std::endl;
 }
 
-// Check if a point is in the set or escapes to infinity, return the number if iterations
-int escape(Complex c, int iter_max, const std::function<Complex( Complex, Complex)> &func) {
-	Complex z(0);
-	int iter = 0;
+void Mandelbrot::zoom_in() 
+{
+    std::cout << "Mandelbrot::zoom_in() called" << std::endl;
+    _domain.zoom_in();
+    std::cout << "Domain: " << _domain.tostring() << std::endl;
 
-	while (abs(z) < 2.0 && iter < iter_max) {
-		z = func(z, c);
-		iter++;
-	}
-
-	return iter;
 }
 
-// Loop over each pixel from our image and check if the points associated with this pixel escape to infinity
-void get_number_iterations(Window<int> &scr, Window<double> &fract, int iter_max, std::vector<int> &colors,
-	const std::function<Complex( Complex, Complex)> &func) {
-	int k = 0, progress = -1;
-	for(int i = scr.ymin(); i < scr.ymax(); ++i) {
-		for(int j = scr.xmin(); j < scr.xmax(); ++j) {
-			Complex c((double)j, (double)i);
-			c = scale(scr, fract, c);
-			colors[k] = escape(c, iter_max, func);
-			k++;
-		}
-		if(progress < (int)(i*100.0/scr.ymax())){
-			progress = (int)(i*100.0/scr.ymax());
-			std::cout << progress << "%\n";
-		}
-	}
+void Mandelbrot::zoom_out()
+{
+    std::cout << "Mandelbrot::zoom_out() called" << std::endl;
+    _domain.zoom_out();
+    std::cout << "Domain: " << _domain.tostring() << std::endl;
 }
 
-void fractal(Window<int> &scr, Window<double> &fract, int iter_max, std::vector<int> &colors,
-	const std::function<Complex( Complex, Complex)> &func, const char *fname, bool smooth_color) {
-	auto start = std::chrono::steady_clock::now();
-	get_number_iterations(scr, fract, iter_max, colors, func);
-	auto end = std::chrono::steady_clock::now();
-	std::cout << "Time to generate " << fname << " = " << std::chrono::duration <double, std::milli> (end - start).count() << " [ms]" << std::endl;
 
-	// Save (show) the result as an image
-	plot(scr, colors, iter_max, fname, smooth_color);
-}
 
-void mandelbrot() {
-	// Define the size of the image
-	Window<int> scr(0, 1200, 0, 1200);
-	// The domain in which we test for points
-	Window<double> fract(-2.2, 1.2, -1.7, 1.7);
 
-	// The function used to calculate the fractal
-	auto func = [] (Complex z, Complex c) -> Complex {return z * z + c; };
 
-	int iter_max = 500;
-	const char *fname = "mandelbrot.png";
-	bool smooth_color = true;
-	std::vector<int> colors(scr.size());
+// Mandlebrot. img_height, img_width, img_center, xmin, xmax, ymin, ymax, zoom_level, draw(), zoom_in(), zoom_out()
+//            draw(Mat image)  {
+//                    Partition image (Mat) into "ncores" segments (say ncores=4)
+//                    start ncores threads that call Mat (create 4 different Mats? or send one Mat with x, y start end coordinates for each segment?)
+//    
+//                    for i, j in .... {
+//                        c = scale the pixel coordinates to fractal's domain (get a corresponding complex number for this pixel coordinates and zoom level)
+//                        num_iter = get_num_iterations(c)  // z = 0, c = c, till max_iter calculate z = z * z + c
+//                        color = get_color(num_iter)  
+//                        Mat(i, j)  = color
+//                    }
+//             }
 
-	// Experimental zoom (bugs ?). This will modify the fract Window (the domain in which we calculate the fractal function) 
-	//zoom(1.0, -1.225, -1.22, 0.15, 0.16, fract); //Z2
-	
-	fractal(scr, fract, iter_max, colors, func, fname, smooth_color);
-}
 
-void triple_mandelbrot() {
-	// Define the size of the image
-	Window<int> scr(0, 1200, 0, 1200);
-	// The domain in which we test for points
-	Window<double> fract(-1.5, 1.5, -1.5, 1.5);
+// Mat image
 
-	// The function used to calculate the fractal
-	auto func = [] (Complex z, Complex c) -> Complex {return z * z * z + c; };
 
-	int iter_max = 500;
-	const char *fname = "triple_mandelbrot.png";
-	bool smooth_color = true;
-	std::vector<int> colors(scr.size());
+// cv::imshow(Mat)
 
-	fractal(scr, fract, iter_max, colors, func, fname, smooth_color);
-}
+// up arrow = zoom in, down arrow = zoom out, mouse click at pixel sets the center, q = quit
 
-int main() {
-
-	mandelbrot();
-	triple_mandelbrot();
-
-	return 0;
-}
