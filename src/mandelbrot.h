@@ -3,6 +3,11 @@
 
 #include <iostream>
 #include <sstream>
+#include <complex>
+
+#include <opencv2/core/mat.hpp>
+
+
 
 const int ZOOM_FACTOR = 2;
 
@@ -65,15 +70,20 @@ private:
 class Mandelbrot
 {
     public: 
-        void draw();
+        void draw(cv::Mat& image);
         void zoom_in();
         void zoom_out();
 
     private: 
+        std::vector<Window<int>> segment_image(cv::Mat& image);
+        int get_num_iterations(std::complex<double> c);
+
         Window<double> _domain {-1.5, 1.5, -1.5, 1.5};
         Size<int> _image_size {0, 0};
         Point<int> _image_center {0, 0};
         int _zoom_level = 0;
+        int _max_iter = 50;
+        double _escape_limit = 2.0;
 };
 
 

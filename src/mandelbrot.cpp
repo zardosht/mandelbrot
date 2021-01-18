@@ -1,14 +1,56 @@
-#include<iostream>
+#include <iostream>
+#include <thread>
 
 
 #include "mandelbrot.h"
 
 
+using std::vector;
 
 
-void Mandelbrot::draw()
+void Mandelbrot::draw(cv::Mat& image)
 {
     std::cout << "Mandelbrot::draw() called" << std::endl;
+    vector<Window<int>> segments = segment_image(image);
+    for (auto& seg : segments) {
+        std::cout << seg.tostring() << std::endl;
+
+
+    }
+}
+
+int Mandelbrot::get_num_iterations(std::complex<double> c)
+{
+    int num_iter = 0;
+    std::complex<double> z(0, 0);
+    std::complex<double> zero(0, 0);
+    while (abs(z) <= _escape_limit && num_iter < _max_iter) {
+        z = z * z + c;
+        if (z == zero) {
+            return num_iter;
+        }
+        num_iter++;
+    }
+    return num_iter;
+}
+
+std::vector<Window<int>> Mandelbrot::segment_image(cv::Mat& image)
+{
+    int num_cores = std::thread::hardware_concurrency();
+    std::cout << "num_cores = " << num_cores << std::endl;
+    vector<Window<int>> segments;
+    int segment_height = image.rows / 2;
+    int segment_width = image.cols / (num_cores / 2);
+    for (int i = 0; i < num_cores / 2; ++i) {
+        int xmin = i * segment_width;
+        int xmax = i * segment_width + segment_width;
+        Window<int> seg1(xmin, xmax, 0, segment_height);
+        segments.push_back(seg1);
+        Window<int> seg2(xmin, xmax, segment_height, image.cols);
+        segments.push_back(seg2);
+    }
+    
+    return segments;
 }
 
 void Mandelbrot::zoom_in() 
@@ -30,7 +72,7 @@ void Mandelbrot::zoom_out()
 
 
 
-// Mandlebrot. img_height, img_width, img_center, xmin, xmax, ymin, ymax, zoom_level, draw(), zoom_in(), zoom_out()
+// Mandelbrot. img_height, img_width, img_center, xmin, xmax, ymin, ymax, zoom_level, draw(), zoom_in(), zoom_out()
 //            draw(Mat image)  {
 //                    Partition image (Mat) into "ncores" segments (say ncores=4)
 //                    start ncores threads that call Mat (create 4 different Mats? or send one Mat with x, y start end coordinates for each segment?)
