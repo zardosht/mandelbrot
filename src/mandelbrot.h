@@ -6,6 +6,7 @@
 #include <complex>
 
 #include <opencv2/core/mat.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 
 
@@ -48,6 +49,9 @@ public:
         _ymax *= ZOOM_FACTOR;
     };
 
+    T width() const { return _xmax - _xmin; }
+    T height() const { return _ymax - _ymin; }
+
     T xmin() const { return _xmin; }
     T xmax() const { return _xmax; }
     T ymin() const { return _ymin; }
@@ -70,6 +74,8 @@ private:
 class Mandelbrot
 {
     public: 
+        Mandelbrot(Size<int> im_size, Point<int> center) : _image_size{im_size}, _image_center{center} { }
+
         void draw(cv::Mat& image);
         void zoom_in();
         void zoom_out();
@@ -77,8 +83,11 @@ class Mandelbrot
     private: 
         std::vector<Window<int>> segment_image(cv::Mat& image);
         int get_num_iterations(std::complex<double> c);
+        std::complex<double> pixel_to_frac_domain(int i, int j);
+        cv::Vec3b get_color(int num_iter);
 
         Window<double> _domain {-1.5, 1.5, -1.5, 1.5};
+        // Window<double> _domain {-3, 3, -3, -3};
         Size<int> _image_size {0, 0};
         Point<int> _image_center {0, 0};
         int _zoom_level = 0;

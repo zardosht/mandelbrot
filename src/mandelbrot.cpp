@@ -14,9 +14,41 @@ void Mandelbrot::draw(cv::Mat& image)
     vector<Window<int>> segments = segment_image(image);
     for (auto& seg : segments) {
         std::cout << seg.tostring() << std::endl;
-
-
+        for (int j = seg.xmin(); j < seg.xmax(); ++j) {
+            for (int i = seg.ymin(); i < seg.ymax(); ++i) {
+                // i is y (row) and j is x (column) in the matrix
+                std::complex<double> c = pixel_to_frac_domain(j, i);
+                int num_iter = get_num_iterations(c);
+                cv::Vec3b color = get_color(num_iter);
+                image.at<cv::Vec3b>(i, j) = color;
+            }
+        }
     }
+}
+
+
+std::complex<double> Mandelbrot::pixel_to_frac_domain(int x, int y) 
+{
+    // x and y are in image space. x is column (j) and y is row (i) in the matrix
+    double x_scaled = ((x - _image_center.x) * _domain.width()) / _image_size.width;
+    double y_scaled = ((y - _image_center.y) * _domain.height()) / _image_size.height;
+    return std::complex(x_scaled, y_scaled);
+}
+
+cv::Vec3b Mandelbrot::get_color(int num_iter)
+{
+    // from here: https://stackoverflow.com/a/35749415/228965
+    cv::Vec3f hsv;   // hue, saturation, value; hue has range [0, 179] in OpenCV
+    hsv[0] = static_cast<float>(180 * num_iter) / _max_iter; 
+    hsv[1] = 255.0;
+    hsv[2] = (num_iter == 0) ? 0.0 : 255.0;
+
+    cv::Mat_<cv::Vec3f> hsvMat(hsv);
+    cv::Mat_<cv::Vec3f> bgrMat;
+    cv::cvtColor(hsvMat, bgrMat, cv::COLOR_HSV2BGR);
+    bgrMat *= 255; // Upscale after conversion
+    // Conversion to Vec3b is handled by OpenCV, no need to static_cast
+    return bgrMat(0);
 }
 
 int Mandelbrot::get_num_iterations(std::complex<double> c)
@@ -27,7 +59,7 @@ int Mandelbrot::get_num_iterations(std::complex<double> c)
     while (abs(z) <= _escape_limit && num_iter < _max_iter) {
         z = z * z + c;
         if (z == zero) {
-            return num_iter;
+            return 0;
         }
         num_iter++;
     }
