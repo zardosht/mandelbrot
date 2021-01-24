@@ -69,9 +69,9 @@ std::vector<Window<int>> Mandelbrot::segment_image(cv::Mat& image)
 {
     int num_cores = std::thread::hardware_concurrency();
     vector<Window<int>> segments;
-    int segment_height = image.rows / 2;
-    int segment_width = image.cols / (num_cores / 2);
-    for (int i = 0; i < num_cores / 2; ++i) {
+    int segment_width = image.cols / num_cores;
+    int segment_height = image.rows;
+    for (int i = 0; i < num_cores; ++i) {
         int xmin = i * segment_width;
         int xmax = i * segment_width + segment_width;
         Window<int> seg1(xmin, xmax, 0, segment_height);
