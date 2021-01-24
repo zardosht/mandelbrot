@@ -10,10 +10,9 @@ using std::vector;
 
 void Mandelbrot::draw(cv::Mat& image)
 {
-    std::cout << "Mandelbrot::draw() called" << std::endl;
+    std::cout << "Mandelbrot::draw()" << std::endl;
     vector<Window<int>> segments = segment_image(image);
     for (auto& seg : segments) {
-        std::cout << seg.tostring() << std::endl;
         for (int j = seg.xmin(); j < seg.xmax(); ++j) {
             for (int i = seg.ymin(); i < seg.ymax(); ++i) {
                 // i is y (row) and j is x (column) in the matrix
@@ -32,7 +31,7 @@ std::complex<double> Mandelbrot::pixel_to_frac_domain(int x, int y)
     // x and y are in image space. x is column (j) and y is row (i) in the matrix
     double x_scaled = ((x - _image_center.x) * _domain.width()) / _image_size.width;
     double y_scaled = ((y - _image_center.y) * _domain.height()) / _image_size.height;
-    return std::complex(x_scaled, y_scaled);
+    return std::complex<double>(x_scaled, y_scaled);
 }
 
 cv::Vec3b Mandelbrot::get_color(int num_iter)
@@ -69,7 +68,6 @@ int Mandelbrot::get_num_iterations(std::complex<double> c)
 std::vector<Window<int>> Mandelbrot::segment_image(cv::Mat& image)
 {
     int num_cores = std::thread::hardware_concurrency();
-    std::cout << "num_cores = " << num_cores << std::endl;
     vector<Window<int>> segments;
     int segment_height = image.rows / 2;
     int segment_width = image.cols / (num_cores / 2);
@@ -87,17 +85,25 @@ std::vector<Window<int>> Mandelbrot::segment_image(cv::Mat& image)
 
 void Mandelbrot::zoom_in() 
 {
-    std::cout << "Mandelbrot::zoom_in() called" << std::endl;
+    _zoom_level++;
+    std::cout << "zoom_in(), zoom_level=" << _zoom_level << std::endl;
     _domain.zoom_in();
     std::cout << "Domain: " << _domain.tostring() << std::endl;
-
 }
 
 void Mandelbrot::zoom_out()
 {
-    std::cout << "Mandelbrot::zoom_out() called" << std::endl;
+    if (_zoom_level == 0) {
+        std::cout << "zoom_out(), zoom_level=0, retrun;" << std::endl;
+        return;
+    }
+    _zoom_level--;
+    std::cout << "zoom_out(), zoom_level=" << _zoom_level << std::endl;
     _domain.zoom_out();
     std::cout << "Domain: " << _domain.tostring() << std::endl;
+    if (_zoom_level == 0) {
+        set_image_center(_image_size.width / 2 + 100, _image_size.height / 2);
+    }
 }
 
 

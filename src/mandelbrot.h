@@ -10,7 +10,8 @@
 
 
 
-const int ZOOM_FACTOR = 2;
+// const int ZOOM_FACTOR = 2;
+const double ZOOM_FACTOR = 1.2;
 
 template<typename T>
 struct Point
@@ -79,6 +80,14 @@ class Mandelbrot
         void draw(cv::Mat& image);
         void zoom_in();
         void zoom_out();
+
+        void set_image_center(const int x, const int y) { 
+            std::cout << "set_image_center(), x=" << x << ", y=" << y << std::endl;
+            _image_center.x = x;  
+            _image_center.y = y;    
+        }
+
+        Point<int> get_image_center() const { return _image_center; }
 
     private: 
         std::vector<Window<int>> segment_image(cv::Mat& image);
