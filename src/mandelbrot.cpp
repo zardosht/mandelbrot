@@ -7,6 +7,27 @@
 
 using std::vector;
 
+template class Window<double>;
+
+template <typename T>
+Window<T>::Window(Size<T> size, Point<T> center) : _size{size}, _center{center}  
+{ 
+    _xmin = _center.x - _size.width / 2;
+    _xmax = _center.x + _size.width / 2;
+    _ymin = _center.y - _size.height / 2;
+    _ymax = _center.y + _size.height / 2;
+}
+
+template <typename T>
+void Window<T>::set_center(Point<T> center) 
+{
+    _center = center;
+    _xmin = _center.x - _size.width / 2;
+    _xmax = _center.x + _size.width / 2;
+    _ymin = _center.y - _size.height / 2;
+    _ymax = _center.y + _size.height / 2;
+}
+
 
 void Mandelbrot::draw(cv::Mat& image)
 {

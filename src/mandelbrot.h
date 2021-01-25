@@ -34,7 +34,11 @@ class Window
 public:
     Window(T xmin, T xmax, T ymin, T ymax) : 
         _xmin{xmin}, _xmax{xmax}, 
-        _ymin{ymin}, _ymax{ymax} { }
+        _ymin{ymin}, _ymax{ymax}, 
+        _size{std::abs(xmax - xmin), std::abs(ymax - ymin)}, 
+        _center{(xmin + xmax) / 2, (ymin + ymax) / 2}  {  }
+
+    Window(Size<T> size, Point<T> center);
 
     void zoom_in() {
         _xmin /= ZOOM_FACTOR;
@@ -50,13 +54,17 @@ public:
         _ymax *= ZOOM_FACTOR;
     };
 
-    T width() const { return _xmax - _xmin; }
-    T height() const { return _ymax - _ymin; }
+    T width() const { return _size.width; }
+    T height() const { return _size.height; }
+    Size<T> size() const { return _size; }
 
     T xmin() const { return _xmin; }
     T xmax() const { return _xmax; }
     T ymin() const { return _ymin; }
     T ymax() const { return _ymax; }
+
+    Point<T> center() const { return _center; }
+    void set_center(Point<T> center);
 
     std::string tostring() {
         std::stringstream ss;
@@ -69,6 +77,8 @@ private:
     T _xmax;
     T _ymin;
     T _ymax;
+    Size<T> _size;
+    Point<T> _center;
 };
 
 
