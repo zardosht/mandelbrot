@@ -7,25 +7,23 @@
 
 using std::vector;
 
-template class Window<double>;
-
-template <typename T>
-Window<T>::Window(Size<T> size, Point<T> center) : _size{size}, _center{center}  
-{ 
-    _xmin = _center.x - _size.width / 2;
-    _xmax = _center.x + _size.width / 2;
-    _ymin = _center.y - _size.height / 2;
-    _ymax = _center.y + _size.height / 2;
-}
 
 template <typename T>
 void Window<T>::set_center(Point<T> center) 
 {
+    std::cout << "set_center(); current domain: " << this->tostring() << std::endl;
     _center = center;
-    _xmin = _center.x - _size.width / 2;
-    _xmax = _center.x + _size.width / 2;
-    _ymin = _center.y - _size.height / 2;
-    _ymax = _center.y + _size.height / 2;
+
+    // Since width is calculated from _xmin and _xmax, save the width before setting the 
+    // _xmin and _xmax values. Same for height.
+    double w = width();
+    double h = height();
+    _xmin = _center.x - w / 2;
+    _xmax = _center.x + w / 2;
+    _ymin = _center.y - h / 2;
+    _ymax = _center.y + h / 2;
+    std::cout << "set_center(); new domain: " << this->tostring() << std::endl;
+
 }
 
 
@@ -47,7 +45,16 @@ void Mandelbrot::draw(cv::Mat& image)
 }
 
 
-std::complex<double> Mandelbrot::pixel_to_frac_domain(int x, int y) 
+void Mandelbrot::set_center(const int x, const int y) 
+{ 
+    std::cout << "set_center(), x=" << x << ", y=" << y << std::endl;
+    
+    std::complex<double> c = pixel_to_frac_domain(x, y);
+    _domain.set_center(Point<double> {c.real(), c.imag()});
+}
+
+
+std::complex<double> Mandelbrot::pixel_to_frac_domain(const int x, const int y) 
 {
     // x and y are in image space. x is column (j) and y is row (i) in the matrix
     double x_scaled = ((x - _image_center.x) * _domain.width()) / _image_size.width;
@@ -123,7 +130,7 @@ void Mandelbrot::zoom_out()
     _domain.zoom_out();
     std::cout << "Domain: " << _domain.tostring() << std::endl;
     if (_zoom_level == 0) {
-        set_image_center(_image_size.width / 2 + 100, _image_size.height / 2);
+        set_center(_image_size.width / 2 + 100, _image_size.height / 2);
     }
 }
 

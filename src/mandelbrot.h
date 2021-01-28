@@ -11,7 +11,7 @@
 
 
 // const int ZOOM_FACTOR = 2;
-const double ZOOM_FACTOR = 1.2;
+const double ZOOM_FACTOR = 1.5;
 
 template<typename T>
 struct Point
@@ -35,10 +35,7 @@ public:
     Window(T xmin, T xmax, T ymin, T ymax) : 
         _xmin{xmin}, _xmax{xmax}, 
         _ymin{ymin}, _ymax{ymax}, 
-        _size{std::abs(xmax - xmin), std::abs(ymax - ymin)}, 
         _center{(xmin + xmax) / 2, (ymin + ymax) / 2}  {  }
-
-    Window(Size<T> size, Point<T> center);
 
     void zoom_in() {
         _xmin /= ZOOM_FACTOR;
@@ -54,9 +51,8 @@ public:
         _ymax *= ZOOM_FACTOR;
     };
 
-    T width() const { return _size.width; }
-    T height() const { return _size.height; }
-    Size<T> size() const { return _size; }
+    T width() const { return std::abs(_xmax - _xmin); }
+    T height() const { return std::abs(_ymax - _ymin); }
 
     T xmin() const { return _xmin; }
     T xmax() const { return _xmax; }
@@ -68,7 +64,7 @@ public:
 
     std::string tostring() {
         std::stringstream ss;
-        ss << _xmin << ", " << _xmax << ", " << _ymin << ", " << _ymax;
+        ss << _xmin << ", " << _xmax << ", " << _ymin << ", " << _ymax << ", w,h: " << width() << ", " << height();
         return ss.str();
     }
 
@@ -77,7 +73,6 @@ private:
     T _xmax;
     T _ymin;
     T _ymax;
-    Size<T> _size;
     Point<T> _center;
 };
 
@@ -91,13 +86,9 @@ class Mandelbrot
         void zoom_in();
         void zoom_out();
 
-        void set_image_center(const int x, const int y) { 
-            std::cout << "set_image_center(), x=" << x << ", y=" << y << std::endl;
-            _image_center.x = x;  
-            _image_center.y = y;    
-        }
-
+        void set_center(const int x, const int y);
         Point<int> get_image_center() const { return _image_center; }
+        Point<double> get_domain_center() const { return _domain.center(); }
 
     private: 
         std::vector<Window<int>> segment_image(cv::Mat& image);

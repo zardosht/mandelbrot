@@ -13,7 +13,7 @@ using std::endl;
 void on_mouse_down(int event, int x, int y, int flags, void *userdata) {
   /// capture movements of the mouse cursor to get pixels which it points to.
   if (event == cv::EVENT_LBUTTONDOWN) {
-      static_cast<Mandelbrot*>(userdata)->set_image_center(x + 100, y);
+      static_cast<Mandelbrot*>(userdata)->set_center(x, y);
   }
 }
 
