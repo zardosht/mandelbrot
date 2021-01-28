@@ -26,6 +26,17 @@ void Window<T>::set_center(Point<T> center)
 
 }
 
+template <typename T>
+void Window<T>::reset(T xmin, T xmax, T ymin, T ymax) 
+{
+    _xmin = xmin;
+    _xmax = xmax;
+    _ymin = ymin;
+    _ymax = ymax;
+    _center = Point<T> {(xmin + xmax) / 2, (ymin + ymax) / 2};
+}
+
+
 
 void Mandelbrot::draw(cv::Mat& image)
 {
@@ -130,6 +141,7 @@ void Mandelbrot::zoom_out()
     _domain.zoom_out();
     std::cout << "Domain: " << _domain.tostring() << std::endl;
     if (_zoom_level == 0) {
+        _domain.reset(-1.5, 1.5, -1.5, 1.5);
         set_center(_image_size.width / 2 + 100, _image_size.height / 2);
     }
 }

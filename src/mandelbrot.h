@@ -61,6 +61,7 @@ public:
 
     Point<T> center() const { return _center; }
     void set_center(Point<T> center);
+    void reset(T xmin, T xmax, T ymin, T ymax);
 
     std::string tostring() {
         std::stringstream ss;
