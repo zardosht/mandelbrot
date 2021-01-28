@@ -57,8 +57,8 @@ void Mandelbrot::set_center(const int x, const int y)
 std::complex<double> Mandelbrot::pixel_to_frac_domain(const int x, const int y) 
 {
     // x and y are in image space. x is column (j) and y is row (i) in the matrix
-    double x_scaled = ((x - _image_center.x) * _domain.width()) / _image_size.width;
-    double y_scaled = ((y - _image_center.y) * _domain.height()) / _image_size.height;
+    double x_scaled = _domain.center().x + ((x - _image_center.x) * _domain.width()) / _image_size.width;
+    double y_scaled = _domain.center().y + ((y - _image_center.y) * _domain.height()) / _image_size.height;
     return std::complex<double>(x_scaled, y_scaled);
 }
 
