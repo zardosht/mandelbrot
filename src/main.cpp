@@ -22,8 +22,15 @@ void on_mouse_down(int event, int x, int y, int flags, void *userdata) {
 int main()
 {
     int height = 512;
-    std::cout << "Hello. Please enter image size (it must be a power of 2, like 256, 512 and 1024): " << std::endl;
+    std::cout << "This program draws Mandelbrot set" << std::endl;
+    std::cout << "Please enter image size (128, 256, 512, or 1024): ";
     std::cin >> height;
+
+    if (!(height == 128 || height == 256 || height == 512 || height == 1024)) {
+        std::cout << "Size invalid. Exit" << std::endl;
+        return -1;
+    }
+
     int width = height;
     cv::Mat image(height, width, CV_8UC3, cv::Scalar(0, 0, 0));
 
