@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <complex>
+#include <vector>
 
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -81,7 +82,7 @@ private:
 class Mandelbrot
 {
     public: 
-        Mandelbrot(Size<int> im_size, Point<int> center) : _image_size{im_size}, _image_center{center} { }
+        Mandelbrot(Size<int> im_size, Point<int> center) : _image_size{im_size}, _image_center{center}  { }
 
         void draw(cv::Mat& image);
         void zoom_in();
@@ -93,12 +94,14 @@ class Mandelbrot
 
     private: 
         std::vector<Window<int>> segment_image(cv::Mat& image);
+        void draw_segment(cv::Mat& image, Window<int>& img_segment);
         int get_num_iterations(std::complex<double> c);
         std::complex<double> pixel_to_frac_domain(int i, int j);
         cv::Vec3b get_color(int num_iter);
 
         Window<double> _domain {-1.5, 1.5, -1.5, 1.5};
         // Window<double> _domain {-3, 3, -3, -3};
+        std::vector<Window<int>> _image_segments;
         Size<int> _image_size {0, 0};
         Point<int> _image_center {0, 0};
         int _zoom_level = 0;

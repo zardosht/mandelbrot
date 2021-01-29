@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.7)
 add_definitions(-std=c++17)
 
 set(CXX_FLAGS "-Wall -pthread")
-set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS, "${CXX_FLAGS} -pthread" )
 
 project(CppND_Capstone)
 
@@ -17,5 +17,4 @@ add_definitions(${OpenCV_DEFINITIONS})
 add_executable(mandelbrot src/main 
                           src/mandelbrot.cpp)
 target_link_libraries(mandelbrot ${OpenCV_LIBRARIES})
-
-
+target_link_libraries(mandelbrot pthread)

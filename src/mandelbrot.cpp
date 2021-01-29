@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
-
+#include <future>
+#include <algorithm>
 
 #include "mandelbrot.h"
 
@@ -37,12 +38,8 @@ void Window<T>::reset(T xmin, T xmax, T ymin, T ymax)
 }
 
 
-
-void Mandelbrot::draw(cv::Mat& image)
+void Mandelbrot::draw_segment(cv::Mat& image, Window<int>& seg)
 {
-    std::cout << "Mandelbrot::draw()" << std::endl;
-    vector<Window<int>> segments = segment_image(image);
-    for (auto& seg : segments) {
         for (int j = seg.xmin(); j < seg.xmax(); ++j) {
             for (int i = seg.ymin(); i < seg.ymax(); ++i) {
                 // i is y (row) and j is x (column) in the matrix
@@ -52,7 +49,27 @@ void Mandelbrot::draw(cv::Mat& image)
                 image.at<cv::Vec3b>(i, j) = color;
             }
         }
+}
+
+
+void Mandelbrot::draw(cv::Mat& image)
+{
+   std::cout << "Mandelbrot::draw()" << std::endl;
+   if (_image_segments.size() == 0) {
+       _image_segments = segment_image(image);
+   }
+    
+    std::vector<std::thread> threads;
+    for (auto& seg : _image_segments)
+    {
+        threads.emplace_back(std::thread(&Mandelbrot::draw_segment, this, std::ref(image), std::ref(seg)));
     }
+
+    // wait for the results
+    std::for_each(threads.begin(), threads.end(), [](std::thread &t) {
+        t.join();
+    });
+   
 }
 
 
