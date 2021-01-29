@@ -158,33 +158,8 @@ void Mandelbrot::zoom_out()
     _domain.zoom_out();
     std::cout << "Domain: " << _domain.tostring() << std::endl;
     if (_zoom_level == 0) {
-        _domain.reset(-1.5, 1.5, -1.5, 1.5);
-        set_center(_image_size.width / 2 + 100, _image_size.height / 2);
+        _domain.reset(-2.5, 1, -2, 2);
+        set_center(_image_size.width / 2, _image_size.height / 2);
     }
 }
-
-
-
-
-
-// Mandelbrot. img_height, img_width, img_center, xmin, xmax, ymin, ymax, zoom_level, draw(), zoom_in(), zoom_out()
-//            draw(Mat image)  {
-//                    Partition image (Mat) into "ncores" segments (say ncores=4)
-//                    start ncores threads that call Mat (create 4 different Mats? or send one Mat with x, y start end coordinates for each segment?)
-//    
-//                    for i, j in .... {
-//                        c = scale the pixel coordinates to fractal's domain (get a corresponding complex number for this pixel coordinates and zoom level)
-//                        num_iter = get_num_iterations(c)  // z = 0, c = c, till max_iter calculate z = z * z + c
-//                        color = get_color(num_iter)  
-//                        Mat(i, j)  = color
-//                    }
-//             }
-
-
-// Mat image
-
-
-// cv::imshow(Mat)
-
-// up arrow = zoom in, down arrow = zoom out, mouse click at pixel sets the center, q = quit
 

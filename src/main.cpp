@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 
 #include "mandelbrot.h"
 
@@ -21,15 +22,16 @@ void on_mouse_down(int event, int x, int y, int flags, void *userdata) {
 int main()
 {
     int height = 512;
-    int width = 512;
+    std::cout << "Hello. Please enter image size (it must be a power of 2, like 256, 512 and 1024): " << std::endl;
+    std::cin >> height;
+    int width = height;
     cv::Mat image(height, width, CV_8UC3, cv::Scalar(0, 0, 0));
 
     Size<int> im_size;
     im_size.height = height;
     im_size.width = width;
     Point<int> im_center;
-    // im_center.x = width / 2;
-    im_center.x = width / 2 + 100;
+    im_center.x = width / 2;
     im_center.y = height / 2;
     Mandelbrot mb(im_size, im_center);
     mb.draw(image);

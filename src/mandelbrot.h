@@ -99,8 +99,8 @@ class Mandelbrot
         std::complex<double> pixel_to_frac_domain(int i, int j);
         cv::Vec3b get_color(int num_iter);
 
-        Window<double> _domain {-1.5, 1.5, -1.5, 1.5};
-        // Window<double> _domain {-3, 3, -3, -3};
+        // Window<double> _domain {-1.5, 1.5, -1.5, 1.5};
+        Window<double> _domain {-2.5, 1, -2, 2};
         std::vector<Window<int>> _image_segments;
         Size<int> _image_size {0, 0};
         Point<int> _image_center {0, 0};
