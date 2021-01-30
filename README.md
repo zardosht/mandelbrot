@@ -21,7 +21,7 @@ The image size must be one of the values 128, 256, 512, 1024. User can zoom in a
   * Linux: gcc / g++ is installed by default on most Linux distros
   * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
   * Windows: recommend using [MinGW](http://www.mingw.org/)
-* OpenCV >= 3.0 https://opencv.org/
+* OpenCV >= 4.1 https://opencv.org/
 
 
 ## Build and Run Instructions
